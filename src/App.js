@@ -1,30 +1,54 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import SearchBar from './components/SearchBar';
+import Pagination from './components/Pagination';
 
-function App() {
-  return (
+export default function App() {
+    const url = 'https://api.unsplash.com/search/photos/?client_id=8m2YSdJ9iILZWgBneeeU58Cs7WxezHc6pdfVyfa1_6Y';
+    const [photos, setPhotos] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [linkHeader, setLinkHeader] = useState('');
+
+    const handleOnSearch = (searchTermParam) => {
+        setSearchTerm(searchTermParam);
+
+        axios
+            .get(`${url}&query=${searchTermParam}`)
+            .then(response => {
+                setPhotos(response.data.results);
+                setLinkHeader(response.headers.link);
+                })
+            .catch(error => console.error(error));
+    }
+
+    const handlePageChange = (pageUrl) => {
+        axios
+            .get(pageUrl)
+            .then(response => {
+                setPhotos(response.data.results);
+                setLinkHeader(response.headers.link);
+            })
+            .catch(error => console.error(error));
+    }
+return(
+
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>React Starter Project</h1>
-      <div className="card">
-        <p>
-          Edit <code>src/App.js</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
-}
+            <SearchBar onSearch={handleOnSearch}></SearchBar>
 
-export default App;
+            {photos.map(photo => (
+                    <div key={photo.id}>
+                            <img src={photo.urls.small} alt={photo.alt_description} />
+                    </div>
+            ))}
+
+            {photos.length > 0 && (
+                    <Pagination linkHeader={linkHeader} onPageChange={handlePageChange}></Pagination>
+            )}
+
+           
+    </>
+
+ 
+
+);
+}
