@@ -2,18 +2,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import SearchBar from './components/SearchBar';
 import Pagination from './components/Pagination';
+import searchApi from './searchApi';
 
 export default function App() {
-    const url = 'https://api.unsplash.com/search/photos/?client_id=8m2YSdJ9iILZWgBneeeU58Cs7WxezHc6pdfVyfa1_6Y';
     const [photos, setPhotos] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
     const [linkHeader, setLinkHeader] = useState('');
 
-    const handleOnSearch = (searchTermParam) => {
-        setSearchTerm(searchTermParam);
 
-        axios
-            .get(`${url}&query=${searchTermParam}`)
+    const handleOnSearch = (searchTermParam) => {
+        searchApi.SearchRequest(searchTermParam)
             .then(response => {
                 setPhotos(response.data.results);
                 setLinkHeader(response.headers.link);
@@ -22,8 +19,7 @@ export default function App() {
     }
 
     const handlePageChange = (pageUrl) => {
-        axios
-            .get(pageUrl)
+        searchApi.GetRequest(pageUrl)
             .then(response => {
                 setPhotos(response.data.results);
                 setLinkHeader(response.headers.link);
