@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import SearchBar from './components/SearchBar';
 import Pagination from './components/Pagination';
 import searchApi from './searchApi';
